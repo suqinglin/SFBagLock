@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="SFBagLock"/>
+    <version value="4" />
+    <list>
+        <mapping class="com.nexless.sfbaglock.bean.ProjectInfo"/>
+        <mapping class="com.nexless.sfbaglock.bean.ProductInfo"/>
+        <!--<mapping class="com.nexless.network.db.DeviceDB"/>-->
+        <!--<mapping class="com.nexless.network.db.PairResponseDB"/>-->
+    </list>
+</litepal>
