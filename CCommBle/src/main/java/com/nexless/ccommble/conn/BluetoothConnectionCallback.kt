@@ -59,18 +59,22 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
                 if (gatt != null) {
                     bluetoothGatt = gatt
                     val isDiscoverServices = bluetoothGatt?.discoverServices()
-                    if (!isDiscoverServices!!) {
+                    if (isDiscoverServices!!) {
                         timerDiscoverServices = Observable.timer(5000, TimeUnit.MILLISECONDS)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe {
+                                    CommLog.logE(TAG, "closeGatt 6")
                                     closeGatt()
                                     bluetoothStatus.set(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
                                     bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
                                     CommLog.logE(TAG, "timerDiscoverServices=5000")
                                 }
+                    } else {
+                        CommLog.logE(TAG, "onConnectionStateChange->isDiscoverServices = false")
                     }
                 } else {
+                    CommLog.logE(TAG, "closeGatt 3")
                     closeGatt()
                     bluetoothStatus.set(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
                     bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
@@ -78,6 +82,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 receiveData = null
+                CommLog.logE(TAG, "closeGatt 4")
                 closeGatt()
                 if (bluetoothStatus.get() == ConnectionConstants.STATUS_CONN_ENNOTIFY_SUCC) {
                     bluetoothStatus.set(ConnectionConstants.STATUS_CONN_DISCONN)
@@ -91,6 +96,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
             receiveData = null
             CommLog.logE(TAG, "onConnectionStateChange->STATUS_CONN_FAIL")
 //            if (bluetoothStatus.get() != ConnectionConstants.STATUS_DATA_WRITE_SUCC) {
+            CommLog.logE(TAG, "closeGatt 5")
                 closeGatt()
                 bluetoothStatus.set(ConnectionConstants.STATUS_CONN_FAIL)
                 bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_FAIL)
@@ -133,6 +139,7 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
                                 }
                     }
                 } else {
+                    CommLog.logE(TAG, "closeGatt 2")
                     closeGatt()
                     bluetoothStatus.set(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
                     bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
@@ -140,12 +147,14 @@ class BluetoothConnectionCallback(devName: String, endIdentify: Array<String>?, 
                 }
             } else {
                 gatt!!.refreshGattCache()
+                CommLog.logE(TAG, "closeGatt 1")
                 closeGatt()
                 bluetoothStatus.set(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
                 bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
                 CommLog.logE(TAG, "BluetoothConnectionCallback：bluetoothGattCharacteristicWrite=null")
             }
         } else {
+            CommLog.logE(TAG, "closeGatt 0")
             closeGatt()
             bluetoothStatus.set(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)
             bluetoothListener.onConnStatusFail(ConnectionConstants.STATUS_CONN_DISCOVERSERVICES_FAIL)

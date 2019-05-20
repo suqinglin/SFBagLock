@@ -30,7 +30,7 @@ public class CsvHelper {
 //            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()  + File.separator + "sf_setup_record" + ".csv");
             BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
             // 添加头部名称
-            bw.write("project" + "," + "userKey" + "," + "userId" + "," + "SN" + "," + "MAC" + "," + "CNT" + "," + "timeStamp");
+            bw.write("PROJECT" + "," + "USER_KEY" + "," + "USER_ID" + "," + "SN" + "," + "MAC" + "," + "CNT" + "," + "TIME_STAMP");
             bw.newLine();
             for (int i = 0; i < list.size(); i++) {
                 bw.write(
@@ -38,7 +38,7 @@ public class CsvHelper {
                                 + "," + list.get(i).getUserKey()
                                 + "," + list.get(i).getUserId()
                                 + "," + list.get(i).getSn()
-                                + "," + list.get(i).getMac()
+                                + "," + list.get(i).getMac().replace(":", "")
                                 + "," + list.get(i).getCnt()
                                 + "," + list.get(i).getTimeStamp());
                 bw.newLine();

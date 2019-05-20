@@ -15,6 +15,7 @@ import com.calm.comm.lib.qr.zxing.activity.CaptureActivity;
 import com.nexless.ccommble.codec.DecoderException;
 import com.nexless.ccommble.codec.binary.Hex;
 import com.nexless.ccommble.conn.BluetoothListener;
+import com.nexless.ccommble.conn.ConnectionConstants;
 import com.nexless.ccommble.conn.ConnectionHelper;
 import com.nexless.ccommble.data.BagLockAESUtils;
 import com.nexless.ccommble.data.BaglockUtils;
@@ -245,7 +246,9 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void onConnStatusFail(int status) {
                         mDialogHelper.dismissProgressDialog();
-                        ConnectionHelper.getInstance().disConnDevice(mMac);
+//                        if (status == ConnectionConstants.STATUS_DATA_READ_TIMEOUT) {
+//                            ConnectionHelper.getInstance().disConnDevice(mMac);
+//                        }
                         showToast(BleStatusUtil.getConnectStatusMsg(status));
                     }
 
@@ -253,7 +256,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                     public void onConnStatusSucc(int status) {
 
                     }
-                }, 3000);
+                }, 100);
     }
 
     private void test() throws DecoderException {
@@ -280,18 +283,6 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
 
                     @Override
                     public void onDataChange(@Nullable byte[] data) {
-//                        if (timerConnTimeout != null && !timerConnTimeout.isDisposed()) {
-//                            timerConnTimeout.dispose();
-//                        }
-//                        timerConnTimeout = Observable.timer(3000, TimeUnit.MILLISECONDS)
-//                                .subscribeOn(Schedulers.io())
-//                                .observeOn(AndroidSchedulers.mainThread())
-//                                .subscribe(aLong -> {
-//                                    ConnectionHelper.getInstance().disConnDevice(mMac);
-//                                    timerConnTimeout.dispose();
-//                                    CommLog.logE("receiveData:disConnDevice->" + mMac);
-//                                });
-//                        ConnectionHelper.getInstance().disConnDevice(mMac);
                         mDialogHelper.dismissProgressDialog();
                         String result = Hex.encodeHexString(data).toUpperCase();
                         CommLog.logE("receiveData:" + result);
@@ -316,6 +307,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                         product.setTimeStamp(System.currentTimeMillis() / 1000);
                                         product.save();
                                     }
+                                    CommLog.logE("-----------------------------> SN = " + mSn + "/" + product.getSN());
                                     mEdtCnt.setText(String.valueOf(mCnt));
                                     mTvMsg.setText("Status:开锁成功,电量:" + lockResult.getBattery() / 1000f + "V");
                                 } else {
