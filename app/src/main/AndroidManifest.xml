@@ -32,7 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ProductActivity" />
+        <activity android:name=".activity.ProductActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name=".activity.SearchDeviceActivity" />
         <activity android:name=".activity.BluetoothTestActivity" />
         <activity android:name=".activity.ProjectActivity" />

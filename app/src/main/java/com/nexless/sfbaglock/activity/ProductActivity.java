@@ -5,8 +5,11 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,21 +25,25 @@ import com.nexless.ccommble.data.BaglockUtils;
 import com.nexless.ccommble.data.Encrypt;
 import com.nexless.ccommble.data.model.LockResult;
 import com.nexless.ccommble.util.BleStatusUtil;
+import com.nexless.ccommble.util.CommHandler;
 import com.nexless.ccommble.util.CommLog;
 import com.nexless.sfbaglock.AppConstant;
 import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.PAdapter;
 import com.nexless.sfbaglock.adapter.PViewHolder;
 import com.nexless.sfbaglock.bean.DeviceBean;
+import com.nexless.sfbaglock.bean.LogInfo;
 import com.nexless.sfbaglock.bean.ProductInfo;
 import com.nexless.sfbaglock.bean.ProjectInfo;
 import com.nexless.sfbaglock.bean.SetupRecordBean;
 import com.nexless.sfbaglock.util.CsvHelper;
+import com.nexless.sfbaglock.util.DateUtil;
 import com.nexless.sfbaglock.view.AppTitleBar;
 
 import org.jetbrains.annotations.Nullable;
 import org.litepal.LitePal;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -46,12 +53,13 @@ import java.util.Random;
  * @author: su qinglin
  * @description: 生产
  */
-public class ProductActivity extends BaseActivity implements View.OnClickListener {
+public class ProductActivity extends BaseActivity implements View.OnClickListener, CommHandler.MessageHandler {
 
     private static final String TAG = "BluetoothConnectionCallback";
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
     private static final int REQ_QR_CODE = 0x0001;
     private static final int REQ_SEARCH_DEVICE = 0x0002;
+    private static final int MSG_UPDATE_LOG = 0x0003;
     private ProjectInfo mProject;
     private EditText mEdtSn;
     private EditText mEdtMac;
@@ -61,6 +69,9 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     private long mCnt;
     private String mMac;
     private String mDevName;
+    private CommHandler mHandle = new CommHandler(this);
+    private String mLogContent = "";
+    private DecimalFormat mDfBattery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +91,11 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_product_test).setOnClickListener(this);
         findViewById(R.id.btn_product_save).setOnClickListener(this);
         findViewById(R.id.btn_product_load).setOnClickListener(this);
+        mTvMsg.setMovementMethod(new ScrollingMovementMethod());
         titleBar.setRightListener(this);
         edtProjectName.setText(mProject.getProjectName());
         edtUserId.setText(mProject.getUserId());
+        mDfBattery = new DecimalFormat("#.0");
     }
 
     @Override
@@ -172,18 +185,18 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                 } else {
                                     CommLog.logE(TAG, "setUserKey->onDataChange:Status = " + lockResult.getResult());
                                     mDialogHelper.dismissProgressDialog();
-                                    mTvMsg.setText("Status:" + BleStatusUtil.getResultMsg(lockResult.getResult()));
+                                    addOptionLog(BleStatusUtil.getResultMsg(lockResult.getResult()));
                                 }
                             } else {
                                 CommLog.logE(TAG, "setUserKey->onDataChange:crc校验失败");
                                 mDialogHelper.dismissProgressDialog();
-                                mTvMsg.setText("crc校验失败");
+                                addOptionLog("crc校验失败");
                             }
                         } catch (DecoderException e) {
                             CommLog.logE(TAG, "setUserKey->onDataChange->DecoderException:" + e.getMessage());
                             e.printStackTrace();
                             mDialogHelper.dismissProgressDialog();
-                            mTvMsg.setText("程序异常");
+                            addOptionLog("程序异常");
                         }
                     }
 
@@ -223,7 +236,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                 LockResult lockResult = BaglockUtils.parseLockResult(result);
                                 CommLog.logE("lockResult:" + lockResult.toString());
                                 if (BleStatusUtil.RST_SUCC.equals(lockResult.getResult())) {
-                                    mTvMsg.setText("Status:匹配成功,电池电压:" + lockResult.getBattery()/1000f + "V");
+                                    addOptionLog("匹配成功，SN:" + mEdtSn.getText() + "，电压:" + mDfBattery.format(lockResult.getBattery()/1000f) + "V");
                                     ProductInfo product = new ProductInfo();
                                     product.setCNT(mCnt);
                                     product.setMac(mMac);
@@ -232,14 +245,14 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     product.setTimeStamp(System.currentTimeMillis() / 1000);
                                     product.saveOrUpdate("mac = ?", mMac);
                                 } else {
-                                    mTvMsg.setText("Status:" + BleStatusUtil.getResultMsg(lockResult.getResult()));
+                                    addOptionLog(BleStatusUtil.getResultMsg(lockResult.getResult()));
                                 }
                             } else {
-                                mTvMsg.setText("crc校验失败");
+                                addOptionLog("crc校验失败");
                             }
                         } catch (DecoderException e) {
                             e.printStackTrace();
-                            mTvMsg.setText("程序异常");
+                            addOptionLog("程序异常");
                         }
                     }
 
@@ -309,16 +322,16 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     }
                                     CommLog.logE("-----------------------------> SN = " + mSn + "/" + product.getSN());
                                     mEdtCnt.setText(String.valueOf(mCnt));
-                                    mTvMsg.setText("Status:开锁成功,电量:" + lockResult.getBattery() / 1000f + "V");
+                                    addOptionLog("开锁成功，SN:" + mEdtSn.getText() + "，电压:" + mDfBattery.format(lockResult.getBattery() / 1000f) + "V");
                                 } else {
-                                    mTvMsg.setText("Status:" + BleStatusUtil.getResultMsg(lockResult.getResult()));
+                                    addOptionLog(BleStatusUtil.getResultMsg(lockResult.getResult()));
                                 }
                             } else {
-                                mTvMsg.setText("crc校验失败");
+                                addOptionLog("crc校验失败");
                             }
                         } catch (DecoderException e) {
                             e.printStackTrace();
-                            mTvMsg.setText("程序异常");
+                            addOptionLog("程序异常");
                         }
                     }
 
@@ -391,7 +404,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
             try {
                 mSn = Long.valueOf(result.split("SN:")[1]);
                 if (mSn >= mProject.getSnStart() && mSn <= mProject.getSnEnd()) {
-                    mEdtSn.setText(String.valueOf(mSn));
+                    mEdtSn.setText(result.split("SN:")[1]);
                     startActivityForResult(new Intent(this, SearchDeviceActivity.class), REQ_SEARCH_DEVICE);
                 } else {
                     showToast("SN未在指定范围内");
@@ -451,4 +464,38 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
 //        return 1000;
     }
 
+    /**
+     * 操作日志
+     */
+    private void addOptionLog(String msg) {
+        LogInfo logInfo = new LogInfo(msg, System.currentTimeMillis(), mSn, mMac, 1);
+        logInfo.save();
+        Message message = Message.obtain();
+        message.what = MSG_UPDATE_LOG;
+        message.obj = logInfo;
+        mHandle.sendMessage(message);
+    }
+
+    @Override
+    protected void showToast(String msg) {
+        super.showToast(msg);
+        if (!TextUtils.isEmpty(msg) && mSn != 0 && !TextUtils.isEmpty(mMac)) {
+            LogInfo logInfo = new LogInfo(msg, System.currentTimeMillis(), mSn, mMac, 2);
+            logInfo.save();
+            Message message = Message.obtain();
+            message.what = MSG_UPDATE_LOG;
+            message.obj = logInfo;
+            mHandle.sendMessage(message);
+        }
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_UPDATE_LOG:
+                LogInfo logInfo = (LogInfo) msg.obj;
+                mLogContent = DateUtil.parseLongToString(logInfo.getTimeStamp(), DateUtil.FORMAT_HH_MM_SS) + "  " + logInfo.getContent() + "\n" + mLogContent;
+                mTvMsg.setText(mLogContent);
+        }
+    }
 }

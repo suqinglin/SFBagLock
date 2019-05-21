@@ -14,6 +14,7 @@ import com.nexless.sfbaglock.AppConstant;
 import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.PAdapter;
 import com.nexless.sfbaglock.adapter.PViewHolder;
+import com.nexless.sfbaglock.bean.ProductInfo;
 import com.nexless.sfbaglock.bean.ProjectInfo;
 import com.nexless.sfbaglock.view.AppTitleBar;
 
@@ -29,6 +30,7 @@ public class ProjectActivity extends BaseActivity implements View.OnClickListene
     private EditText mEdtSnStart;
     private EditText mEdtSnEnd;
     private EditText mEdtUserId;
+    private TextView mTvQty;
     private Button btnClear;
     private Button btnLoad;
     private Button btnSave;
@@ -49,6 +51,7 @@ public class ProjectActivity extends BaseActivity implements View.OnClickListene
         btnClear = findViewById(R.id.btn_project_clear);
         btnLoad = findViewById(R.id.btn_project_load);
         btnSave = findViewById(R.id.btn_project_save);
+        mTvQty = findViewById(R.id.tv_project_qty);
 
         btnClear.setOnClickListener(this);
         btnLoad.setOnClickListener(this);
@@ -145,6 +148,10 @@ public class ProjectActivity extends BaseActivity implements View.OnClickListene
             mEdtSnStart.setText(project.getSnStart() + "");
             mEdtSnEnd.setText(project.getSnEnd() + "");
             mEdtUserId.setText(project.getUserId());
+            // 当前项目下的设备总数
+            int qty = LitePal.where("projectId = ?", String.valueOf(project.getId())).find(ProductInfo.class).size();
+            mTvQty.setText(String.valueOf(qty));
+
             Intent intent = new Intent(ProjectActivity.this, ProductActivity.class);
             intent.putExtra(AppConstant.EXTRA_PROJECT, project);
             startActivity(intent);
