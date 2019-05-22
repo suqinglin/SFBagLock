@@ -9,5 +9,5 @@ public class AppConstant {
 
     public static final String EXTRA_PROJECT = "extra.project";
     public static final String EXTRA_DEVICE = "extra.device";
-    public static final String CURRENT_DATE = "20/05/2019";
+    public static final String CURRENT_DATE = "22/05/2019";
 }

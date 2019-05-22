@@ -14,7 +14,7 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
 
     private int id;
     private int projectId;
-    private long SN;
+    private String SN;
     private long CNT;
     private String mac;
     private String qr;
@@ -26,7 +26,7 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
     protected ProductInfo(Parcel in) {
         id = in.readInt();
         projectId = in.readInt();
-        SN = in.readLong();
+        SN = in.readString();
         CNT = in.readLong();
         mac = in.readString();
         qr = in.readString();
@@ -61,11 +61,11 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
         this.projectId = projectId;
     }
 
-    public long getSN() {
+    public String getSN() {
         return SN;
     }
 
-    public void setSN(long SN) {
+    public void setSN(String SN) {
         this.SN = SN;
     }
 
@@ -110,7 +110,7 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeInt(projectId);
-        dest.writeLong(SN);
+        dest.writeString(SN);
         dest.writeLong(CNT);
         dest.writeString(mac);
         dest.writeString(qr);

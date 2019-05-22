@@ -57,7 +57,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     private EditText mEdtMac;
     private EditText mEdtCnt;
     private TextView mTvMsg;
-    private long mSn;
+    private String mSn;
     private long mCnt;
     private String mMac;
     private String mDevName;
@@ -202,7 +202,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void setSnCnt() throws DecoderException {
-        byte[] sendData = Encrypt.setSnCntEncrypt(mSn, mCnt, mMac.replace(":", ""));
+        byte[] sendData = Encrypt.setSnCntEncrypt(Long.valueOf(mSn), mCnt, mMac.replace(":", ""));
         CommLog.logE(TAG, "setSnCnt sendData:" + Hex.encodeHexString(sendData).toUpperCase());
         ConnectionHelper.getInstance().bleCommunication(
                 mDevName,
@@ -266,7 +266,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         }
         mDialogHelper.showProgressDialog();
         byte[] sendData = Encrypt.openEncrypt(
-                mSn,
+                Long.valueOf(mSn),
                 mCnt,
                 System.currentTimeMillis() / 1000,
                 mMac.replace(":", ""),
@@ -339,7 +339,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
      * 检查数据是否完整
      */
     private boolean checkData() {
-        if (mSn == 0) {
+        if (Long.valueOf(mSn) == 0) {
             showToast("请先扫描SN二维码");
             return false;
         } else if (mMac == null || mCnt == 0) {
@@ -389,8 +389,8 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 return;
             }
             try {
-                mSn = Long.valueOf(result.split("SN:")[1]);
-                if (mSn >= mProject.getSnStart() && mSn <= mProject.getSnEnd()) {
+                mSn = result.split("SN:")[1];
+                if (Long.valueOf(mSn) >= mProject.getSnStart() && Long.valueOf(mSn) <= mProject.getSnEnd()) {
                     mEdtSn.setText(String.valueOf(mSn));
                     startActivityForResult(new Intent(this, SearchDeviceActivity.class), REQ_SEARCH_DEVICE);
                 } else {
