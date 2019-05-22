@@ -352,7 +352,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
      * 检查数据是否完整
      */
     private boolean checkData() {
-        if (Long.valueOf(mSn) == 0) {
+        if (TextUtils.isEmpty(mSn)) {
             showToast("请先扫描SN二维码");
             return false;
         } else if (mMac == null || mCnt == 0) {
@@ -479,7 +479,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void showToast(String msg) {
         super.showToast(msg);
-        if (!TextUtils.isEmpty(msg) && mSn != 0 && !TextUtils.isEmpty(mMac)) {
+        if (!TextUtils.isEmpty(msg) && TextUtils.isEmpty(mSn) && !TextUtils.isEmpty(mMac)) {
             LogInfo logInfo = new LogInfo(msg, System.currentTimeMillis(), mSn, mMac, 2);
             logInfo.save();
             Message message = Message.obtain();

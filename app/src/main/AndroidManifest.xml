@@ -34,12 +34,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ProductActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity android:name=".activity.SearchDeviceActivity" />
-        <activity android:name=".activity.BluetoothTestActivity" />
-        <activity android:name=".activity.ProjectActivity" />
-        <activity android:name=".activity.AboutActivity" />
-        <activity android:name=".activity.ProductActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.SearchDeviceActivity"
             android:screenOrientation="portrait" />

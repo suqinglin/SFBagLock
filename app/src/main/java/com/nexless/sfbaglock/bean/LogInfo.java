@@ -12,14 +12,14 @@ public class LogInfo extends LitePalSupport {
     private long id; // 主键ID
     private String content; // 内容
     private long timeStamp; // 时间戳
-    private long sn; // 序列号
+    private String sn; // 序列号
     private String mac; // MAC地址
     private int type; // 日志类型 1:操作日志，2:Toast日志
 
     public LogInfo() {
     }
 
-    public LogInfo(String content, long timeStamp, long sn, String mac, int type) {
+    public LogInfo(String content, long timeStamp, String sn, String mac, int type) {
         this.content = content;
         this.timeStamp = timeStamp;
         this.sn = sn;
@@ -51,11 +51,11 @@ public class LogInfo extends LitePalSupport {
         this.timeStamp = timeStamp;
     }
 
-    public long getSn() {
+    public String getSn() {
         return sn;
     }
 
-    public void setSn(long sn) {
+    public void setSn(String sn) {
         this.sn = sn;
     }
 
