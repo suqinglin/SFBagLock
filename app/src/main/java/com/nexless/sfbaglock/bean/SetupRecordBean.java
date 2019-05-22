@@ -10,7 +10,7 @@ public class SetupRecordBean {
     private String project;
     private String userKey;
     private String userId;
-    private long sn;
+    private String sn;
     private String mac;
     private long cnt;
     private long timeStamp;
@@ -39,11 +39,11 @@ public class SetupRecordBean {
         this.userId = userId;
     }
 
-    public long getSn() {
+    public String getSn() {
         return sn;
     }
 
-    public void setSn(long sn) {
+    public void setSn(String sn) {
         this.sn = sn;
     }
 

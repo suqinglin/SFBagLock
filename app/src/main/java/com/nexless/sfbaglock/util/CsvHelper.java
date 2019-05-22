@@ -1,5 +1,6 @@
 package com.nexless.sfbaglock.util;
 
+import com.nexless.ccommble.util.CommLog;
 import com.nexless.sfbaglock.bean.SetupRecordBean;
 
 import java.io.BufferedWriter;
@@ -32,6 +33,7 @@ public class CsvHelper {
             bw.write("PROJECT" + "," + "USER_KEY" + "," + "USER_ID" + "," + "SN" + "," + "MAC" + "," + "CNT" + "," + "TIME_STAMP");
             bw.newLine();
             for (int i = 0; i < list.size(); i++) {
+                CommLog.logE("csv SN = " + list.get(i).getSn());
                 bw.write(
                         list.get(i).getProject()
                                 + "," + list.get(i).getUserKey()
