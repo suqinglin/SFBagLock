@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="SFBagLock"/>
-    <version value="5" />
+    <version value="7" />
     <list>
         <mapping class="com.nexless.sfbaglock.bean.ProjectInfo"/>
         <mapping class="com.nexless.sfbaglock.bean.ProductInfo"/>

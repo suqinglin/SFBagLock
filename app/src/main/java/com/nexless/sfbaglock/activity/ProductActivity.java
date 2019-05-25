@@ -27,6 +27,7 @@ import com.nexless.ccommble.data.model.LockResult;
 import com.nexless.ccommble.util.BleStatusUtil;
 import com.nexless.ccommble.util.CommHandler;
 import com.nexless.ccommble.util.CommLog;
+import com.nexless.ccommble.util.CommUtil;
 import com.nexless.sfbaglock.AppConstant;
 import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.PAdapter;
@@ -36,6 +37,10 @@ import com.nexless.sfbaglock.bean.LogInfo;
 import com.nexless.sfbaglock.bean.ProductInfo;
 import com.nexless.sfbaglock.bean.ProjectInfo;
 import com.nexless.sfbaglock.bean.SetupRecordBean;
+import com.nexless.sfbaglock.bean.TResponse;
+import com.nexless.sfbaglock.bean.UploadCsvResponse;
+import com.nexless.sfbaglock.http.RxHelper;
+import com.nexless.sfbaglock.http.ServiceFactory;
 import com.nexless.sfbaglock.util.CsvHelper;
 import com.nexless.sfbaglock.util.DateUtil;
 import com.nexless.sfbaglock.view.AppTitleBar;
@@ -43,10 +48,19 @@ import com.nexless.sfbaglock.view.AppTitleBar;
 import org.jetbrains.annotations.Nullable;
 import org.litepal.LitePal;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 /**
  * @date: 2019/5/6
@@ -115,14 +129,18 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                     test();
                 } catch (DecoderException e) {
                     e.printStackTrace();
+                    mDialogHelper.dismissProgressDialog();
                 }
                 break;
             case R.id.btn_product_save:
                 save();
                 break;
             case R.id.btn_product_load:
+                if (mProject.getProjectNo() == null) {
+                    return;
+                }
                 List<ProductInfo> productList = LitePal
-                        .where("projectId = ?", String.valueOf(mProject.getId()))
+                        .where("projectNo = ?", mProject.getProjectNo())
                         .find(ProductInfo.class);
                 if (productList != null && productList.size() > 0) {
                     showProductList(productList);
@@ -131,7 +149,9 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.apptitlebar_btn_right:
-                startActivity(new Intent(this, AboutActivity.class));
+                Intent intent = new Intent(this, DevicesActivity.class);
+                intent.putExtra(AppConstant.EXTRA_PROJECT, mProject);
+                startActivity(intent);
                 break;
         }
     }
@@ -177,7 +197,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                         CommLog.logE(TAG, "receiveData:" + result);
                         String resData = result.substring(2, 36);
                         try {
-                            if (checkCrc(resData, result.substring(36))) {
+                            if (CommUtil.checkCrc(resData, result.substring(36))) {
                                 LockResult lockResult = BaglockUtils.parseLockResult(result);
                                 CommLog.logE("lockResult:" + lockResult.toString());
                                 if (BleStatusUtil.RST_SUCC.equals(lockResult.getResult())) {
@@ -232,7 +252,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                         CommLog.logE("receiveData:" + result);
                         String resData = result.substring(2, 36);
                         try {
-                            if (checkCrc(resData, result.substring(36))) {
+                            if (CommUtil.checkCrc(resData, result.substring(36))) {
                                 LockResult lockResult = BaglockUtils.parseLockResult(result);
                                 CommLog.logE("lockResult:" + lockResult.toString());
                                 if (BleStatusUtil.RST_SUCC.equals(lockResult.getResult())) {
@@ -241,7 +261,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     product.setCNT(mCnt);
                                     product.setMac(mMac);
                                     product.setSN(mSn);
-                                    product.setProjectId(mProject.getId());
+                                    product.setProjectNo(mProject.getProjectNo());
                                     product.setTimeStamp(System.currentTimeMillis() / 1000);
                                     product.saveOrUpdate("mac = ?", mMac);
                                 } else {
@@ -301,7 +321,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                         CommLog.logE("receiveData:" + result);
                         String resData = result.substring(2, 36);
                         try {
-                            if (checkCrc(resData, result.substring(36))) {
+                            if (CommUtil.checkCrc(resData, result.substring(36))) {
                                 LockResult lockResult = BaglockUtils.parseLockResult(result);
                                 CommLog.logE("lockResult:" + lockResult.toString());
                                 if (BleStatusUtil.RST_SUCC.equals(lockResult.getResult())) {
@@ -313,7 +333,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     } else {
                                         CommLog.logE("Open success, product in database is null");
                                         product = new ProductInfo();
-                                        product.setProjectId(mProject.getId());
+                                        product.setProjectNo(mProject.getProjectNo());
                                         product.setMac(mMac);
                                         product.setSN(mSn);
                                         product.setCNT(mCnt);
@@ -368,7 +388,10 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         List<SetupRecordBean> setupRecordList = new ArrayList<>();
         for (int i = 0; i < productList.size(); i++) {
             ProductInfo product = productList.get(i);
-            ProjectInfo project = LitePal.find(ProjectInfo.class, product.getProjectId());
+            if (product.getProjectNo() == null) {
+                break;
+            }
+            ProjectInfo project = LitePal.where("projectNo = ?", product.getProjectNo()).findFirst(ProjectInfo.class);
             SetupRecordBean setupRecord = new SetupRecordBean();
             setupRecord.setCnt(product.getCNT());
             setupRecord.setSn(product.getSN());
@@ -384,7 +407,8 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
 
         boolean save = CsvHelper.getInstance().saveSetupRecords(setupRecordList);
         if (save) {
-            showToast("保存成功");
+//            showToast("保存成功");
+            uploadCsv(new File(System.getenv("EXTERNAL_STORAGE") + "/nexless/" + AppConstant.CSV_FILE_NAME));
         } else {
             showToast("保存失败");
         }
@@ -425,6 +449,32 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * 上传csv文件到云服务器
+     * @param file
+     */
+    private void uploadCsv(File file) {
+        if (!file.exists()) {
+            return;
+        }
+        mDialogHelper.showProgressDialog();
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+        String name = file.getName();
+        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", name, requestBody);
+        Observable<TResponse<UploadCsvResponse>> observable = ServiceFactory.getInstance().getApiService().uploadCsv(filePart);
+        RxHelper.getInstance().sendRequest(TAG, observable, uploadCsvResponseTResponse -> {
+            mDialogHelper.dismissProgressDialog();
+            if (uploadCsvResponseTResponse.isSuccess()) {
+                showToast("上传成功");
+            } else {
+                showToast(uploadCsvResponseTResponse.message);
+            }
+        }, throwable -> {
+            mDialogHelper.dismissProgressDialog();
+            showToast(RxHelper.getInstance().getErrorInfo(throwable));
+        });
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -440,12 +490,6 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 showToast("权限被拒绝");
             }
         }
-    }
-
-    private boolean checkCrc(String data, String crc) throws DecoderException {
-        int dataCrc = BagLockAESUtils.crc16(0, Hex.decodeHex(data));
-        int crcInt = Integer.parseInt(crc, 16);
-        return dataCrc == crcInt;
     }
 
     /**
@@ -469,7 +513,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
      */
     private void addOptionLog(String msg) {
         LogInfo logInfo = new LogInfo(msg, System.currentTimeMillis(), mSn, mMac, 1);
-        logInfo.save();
+//        logInfo.save();
         Message message = Message.obtain();
         message.what = MSG_UPDATE_LOG;
         message.obj = logInfo;
@@ -481,7 +525,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         super.showToast(msg);
         if (!TextUtils.isEmpty(msg) && TextUtils.isEmpty(mSn) && !TextUtils.isEmpty(mMac)) {
             LogInfo logInfo = new LogInfo(msg, System.currentTimeMillis(), mSn, mMac, 2);
-            logInfo.save();
+//            logInfo.save();
             Message message = Message.obtain();
             message.what = MSG_UPDATE_LOG;
             message.obj = logInfo;
@@ -497,5 +541,11 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 mLogContent = DateUtil.parseLongToString(logInfo.getTimeStamp(), DateUtil.FORMAT_HH_MM_SS) + "  " + logInfo.getContent() + "\n" + mLogContent;
                 mTvMsg.setText(mLogContent);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RxHelper.getInstance().unSubscribeTask(TAG);
     }
 }

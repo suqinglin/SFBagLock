@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.nexless.sfbaglock.view.AppTitleBar
+        android:id="@+id/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:leftBtn="false"
+        app:title="项目" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tv_project_list_user_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Id:"/>
+
+        <TextView
+            android:id="@+id/tv_project_list_user_key"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Key:"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC" />
+
+    <ListView
+        android:id="@+id/lv_project_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="0.5dp"
+        android:divider="#CCCCCC"/>
+
+</LinearLayout>

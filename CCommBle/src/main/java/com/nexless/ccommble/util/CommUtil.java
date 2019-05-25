@@ -10,6 +10,10 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+import com.nexless.ccommble.codec.DecoderException;
+import com.nexless.ccommble.codec.binary.Hex;
+import com.nexless.ccommble.data.BagLockAESUtils;
+
 import java.util.Locale;
 
 import static android.provider.Settings.System.getString;
@@ -153,5 +157,11 @@ public class CommUtil
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static boolean checkCrc(String data, String crc) throws DecoderException {
+        int dataCrc = BagLockAESUtils.crc16(0, Hex.decodeHex(data));
+        int crcInt = Integer.parseInt(crc, 16);
+        return dataCrc == crcInt;
     }
 }

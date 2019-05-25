@@ -13,7 +13,7 @@ import org.litepal.crud.LitePalSupport;
 public class ProductInfo extends LitePalSupport implements Parcelable {
 
     private int id;
-    private int projectId;
+    private String projectNo;
     private String SN;
     private long CNT;
     private String mac;
@@ -25,7 +25,7 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
 
     protected ProductInfo(Parcel in) {
         id = in.readInt();
-        projectId = in.readInt();
+        projectNo = in.readString();
         SN = in.readString();
         CNT = in.readLong();
         mac = in.readString();
@@ -53,12 +53,12 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
         this.id = id;
     }
 
-    public int getProjectId() {
-        return projectId;
+    public String getProjectNo() {
+        return projectNo;
     }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
+    public void setProjectNo(String projectNo) {
+        this.projectNo = projectNo;
     }
 
     public String getSN() {
@@ -109,7 +109,7 @@ public class ProductInfo extends LitePalSupport implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(projectId);
+        dest.writeString(projectNo);
         dest.writeString(SN);
         dest.writeLong(CNT);
         dest.writeString(mac);

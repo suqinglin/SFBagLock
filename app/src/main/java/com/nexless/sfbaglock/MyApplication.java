@@ -3,6 +3,7 @@ package com.nexless.sfbaglock;
 import android.app.Application;
 
 import com.nexless.ccommble.conn.ConnectionHelper;
+import com.nexless.sfbaglock.util.AppPreference;
 
 import org.litepal.LitePal;
 
@@ -19,5 +20,6 @@ public class MyApplication extends Application {
         LitePal.initialize(this);
         //初始化蓝牙连接
         ConnectionHelper.getInstance().init(this);
+        AppPreference.initSharedPreferences(this);
     }
 }

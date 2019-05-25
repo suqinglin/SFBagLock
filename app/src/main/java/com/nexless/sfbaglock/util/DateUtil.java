@@ -12,6 +12,7 @@ public class DateUtil {
 
     public static final String FORMAT_DEFAULT = "yyyy-MM-dd HH:mm:ss";
     public static final String FORMAT_HH_MM_SS = "HH:mm:ss";
+    public static final String FORMAT_YY_MM_DD_HH_MM = "yy-MM-dd HH:mm";
 
     public static String parseLongToString(long timeStamp) {
         SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DEFAULT);

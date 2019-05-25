@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.nexless.sfbaglock.view.AppTitleBar
+        android:id="@+id/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:leftBtn="true"
+        app:title="日志" />
+
+    <TextView
+        android:id="@+id/tv_logs_project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="Project:"/>
+
+    <TextView
+        android:id="@+id/tv_logs_sn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:text="S/N:"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl_device_item_container"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp">
+
+        <TextView
+            android:id="@+id/tv_log_item_time"
+            android:layout_width="124dp"
+            android:layout_height="wrap_content"
+            android:text="Time"/>
+
+        <TextView
+            android:id="@+id/tv_log_item_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/tv_log_item_time"
+            android:layout_marginLeft="12dp"
+            android:text="Message"/>
+
+        <TextView
+            android:id="@+id/tv_log_item_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="User Id"/>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lv_logs_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:dividerHeight="0.5dp"
+        android:divider="#CCCCCC"
+        android:background="@drawable/bg_text_area" />
+
+    <Button
+        android:id="@+id/btn_logs_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="GET"/>
+</LinearLayout>

@@ -2,7 +2,6 @@ package com.nexless.ccommble.data;
 
 import com.nexless.ccommble.codec.DecoderException;
 import com.nexless.ccommble.codec.binary.Hex;
-import com.nexless.ccommble.util.CommConstant;
 import com.nexless.ccommble.util.CommLog;
 import com.nexless.ccommble.util.CommUtil;
 
@@ -63,6 +62,20 @@ public class Encrypt {
         byte[] encrypt = BagLockAESUtils.encrypt(cipherBuf, appKeyBuf);
         return ByteBuffer.allocate(20)
                 .put((byte) 0x02)
+                .put(encrypt)
+                .put((byte) 0x00)
+                .put(crcBuf)
+                .array();
+    }
+
+    public static byte[] readLogEncrypt(long sn, long timeStamp, String mac, String userKey) throws DecoderException {
+        byte[] appKeyBuf = BaglockUtils.getAppKey(mac, (int) sn, userKey);
+        byte[] readLogBuf = BaglockUtils.getReadLogBuf(timeStamp);
+        int crc = BagLockAESUtils.crc16(0, readLogBuf);
+        byte[] crcBuf = ByteBuffer.allocate(2).putShort((short) crc).array();
+        byte[] encrypt = BagLockAESUtils.encrypt(readLogBuf, appKeyBuf);
+        return ByteBuffer.allocate(20)
+                .put((byte) 0x10)
                 .put(encrypt)
                 .put((byte) 0x00)
                 .put(crcBuf)

@@ -15,6 +15,8 @@ public class LogInfo extends LitePalSupport {
     private String sn; // 序列号
     private String mac; // MAC地址
     private int type; // 日志类型 1:操作日志，2:Toast日志
+    private float battery;
+    private String userId;
 
     public LogInfo() {
     }
@@ -73,5 +75,21 @@ public class LogInfo extends LitePalSupport {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public float getBattery() {
+        return battery;
+    }
+
+    public void setBattery(float battery) {
+        this.battery = battery;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

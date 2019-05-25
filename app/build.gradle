@@ -10,8 +10,9 @@ android {
         applicationId "com.nexless.sfbaglock"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.0.8"
+        versionCode 10
+        flavorDimensions "10"
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -26,6 +27,20 @@ android {
             }
         }
     }
+
+    productFlavors {
+
+        dev{
+            applicationId "com.nexless.sfbaglock.dev"
+//            resValue "string", "app_name", "箱包锁测试版"
+        }
+
+        publish{
+            applicationId "com.nexless.sfbaglock"
+//            resValue "string", "app_name", "QR Lock Setup Utility"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -43,4 +58,14 @@ dependencies {
     implementation 'org.litepal.android:core:2.0.0'
     implementation project(':CCommQr')
     implementation project(':CCommBle')
+    // okhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+    // retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    //rxjava rxandroid
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
 }

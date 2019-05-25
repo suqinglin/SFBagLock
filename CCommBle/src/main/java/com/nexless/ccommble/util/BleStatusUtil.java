@@ -12,6 +12,7 @@ public class BleStatusUtil {
     public static final String RST_SUCC = "0x0";
     public static final String RST_NOT_ORIGINAL_STATE = "0x20";
     public static final String RST_NO_USER_KEY = "0x21";
+    public static final String RST_NO_LOGS = "0x3";
     public static final String RST_OTHERS = "0xFE";
 
     public static String getConnectStatusMsg(int status) {
@@ -33,6 +34,8 @@ public class BleStatusUtil {
             return "未下载用户密钥";
         } else if (RST_OTHERS.equals(result)) {
             return "其他错误";
+        } else if (RST_NO_LOGS.equals(result)) {
+            return "暂无更多日志";
         } else {
             return "未知错误";
         }

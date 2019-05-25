@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.nexless.sfbaglock.view.AppTitleBar
+        android:id="@+id/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:leftBtn="true"
+        app:title="设备" />
+
+    <TextView
+        android:id="@+id/tv_devices_project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="Project:"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp">
+
+        <TextView
+            android:id="@+id/tv_device_item_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Index"/>
+
+        <TextView
+            android:id="@+id/tv_device_item_sn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="S/N"/>
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lv_devices_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:dividerHeight="0.5dp"
+        android:divider="#CCCCCC"
+        android:background="@drawable/bg_text_area" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_devices_sn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SN:"/>
+        <TextView
+            android:id="@+id/tv_devices_mac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MAC:"/>
+        <TextView
+            android:id="@+id/tv_devices_cnt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CNT:"/>
+        <TextView
+            android:id="@+id/tv_devices_volt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volt:"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_devices_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DELETE"/>
+            <Button
+                android:id="@+id/btn_devices_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:text="TEST"/>
+        </LinearLayout>
+        
+    </LinearLayout>
+</LinearLayout>

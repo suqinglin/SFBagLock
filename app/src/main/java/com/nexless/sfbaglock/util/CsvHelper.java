@@ -1,6 +1,7 @@
 package com.nexless.sfbaglock.util;
 
 import com.nexless.ccommble.util.CommLog;
+import com.nexless.sfbaglock.AppConstant;
 import com.nexless.sfbaglock.bean.SetupRecordBean;
 
 import java.io.BufferedWriter;
@@ -27,7 +28,7 @@ public class CsvHelper {
 
     public boolean saveSetupRecords(List<SetupRecordBean> list) {
         try {
-            File file = FileHelper.resetFile("sf_setup_record.csv");
+            File file = FileHelper.resetFile(AppConstant.CSV_FILE_NAME);
             BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
             // 添加头部名称
             bw.write("PROJECT" + "," + "USER_KEY" + "," + "USER_ID" + "," + "SN" + "," + "MAC" + "," + "CNT" + "," + "TIME_STAMP");
