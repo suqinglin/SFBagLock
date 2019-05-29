@@ -54,7 +54,7 @@ public class LogsActivity extends BaseActivity implements View.OnClickListener {
         mProject = getIntent().getParcelableExtra(AppConstant.EXTRA_PROJECT);
         mDevice = getIntent().getParcelableExtra(AppConstant.EXTRA_DEVICE);
         AppTitleBar titleBar = findViewById(R.id.titlebar);
-        titleBar.setRightListener(this);
+        titleBar.setRightListener("关于", this);
         TextView tvProject = findViewById(R.id.tv_logs_project);
         TextView tvSn = findViewById(R.id.tv_logs_sn);
         findViewById(R.id.btn_logs_get).setOnClickListener(this);
@@ -80,7 +80,7 @@ public class LogsActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.apptitlebar_btn_right:
+            case R.id.apptitlebar_ll_right:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             case R.id.btn_logs_get:

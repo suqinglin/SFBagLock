@@ -29,6 +29,7 @@ import com.nexless.ccommble.util.CommHandler;
 import com.nexless.ccommble.util.CommLog;
 import com.nexless.ccommble.util.CommUtil;
 import com.nexless.sfbaglock.AppConstant;
+import com.nexless.sfbaglock.BuildConfig;
 import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.PAdapter;
 import com.nexless.sfbaglock.adapter.PViewHolder;
@@ -106,7 +107,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.btn_product_save).setOnClickListener(this);
         findViewById(R.id.btn_product_load).setOnClickListener(this);
         mTvMsg.setMovementMethod(new ScrollingMovementMethod());
-        titleBar.setRightListener(this);
+        titleBar.setRightListener("设备", this);
         edtProjectName.setText(mProject.getProjectName());
         edtUserId.setText(mProject.getUserId());
         mDfBattery = new DecimalFormat("#.0");
@@ -133,7 +134,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_product_save:
-                save();
+                save(TAG);
                 break;
             case R.id.btn_product_load:
                 if (mProject.getProjectNo() == null) {
@@ -148,7 +149,7 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                     showToast("暂无可选产品，请先添加！");
                 }
                 break;
-            case R.id.apptitlebar_btn_right:
+            case R.id.apptitlebar_ll_right:
                 Intent intent = new Intent(this, DevicesActivity.class);
                 intent.putExtra(AppConstant.EXTRA_PROJECT, mProject);
                 startActivity(intent);
@@ -383,37 +384,6 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private void save() {
-        List<ProductInfo> productList = LitePal.findAll(ProductInfo.class);
-        List<SetupRecordBean> setupRecordList = new ArrayList<>();
-        for (int i = 0; i < productList.size(); i++) {
-            ProductInfo product = productList.get(i);
-            if (product.getProjectNo() == null) {
-                break;
-            }
-            ProjectInfo project = LitePal.where("projectNo = ?", product.getProjectNo()).findFirst(ProjectInfo.class);
-            SetupRecordBean setupRecord = new SetupRecordBean();
-            setupRecord.setCnt(product.getCNT());
-            setupRecord.setSn(product.getSN());
-            setupRecord.setMac(product.getMac());
-            if (project != null) {
-                setupRecord.setProject(project.getProjectName());
-                setupRecord.setUserKey(project.getUserKey());
-                setupRecord.setUserId(project.getUserId());
-                setupRecord.setTimeStamp(product.getTimeStamp());
-            }
-            setupRecordList.add(setupRecord);
-        }
-
-        boolean save = CsvHelper.getInstance().saveSetupRecords(setupRecordList);
-        if (save) {
-//            showToast("保存成功");
-            uploadCsv(new File(System.getenv("EXTERNAL_STORAGE") + "/nexless/" + AppConstant.CSV_FILE_NAME));
-        } else {
-            showToast("保存失败");
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -447,32 +417,6 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
             mEdtCnt.setText(String.valueOf(mCnt));
             setUserKey();
         }
-    }
-
-    /**
-     * 上传csv文件到云服务器
-     * @param file
-     */
-    private void uploadCsv(File file) {
-        if (!file.exists()) {
-            return;
-        }
-        mDialogHelper.showProgressDialog();
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
-        String name = file.getName();
-        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", name, requestBody);
-        Observable<TResponse<UploadCsvResponse>> observable = ServiceFactory.getInstance().getApiService().uploadCsv(filePart);
-        RxHelper.getInstance().sendRequest(TAG, observable, uploadCsvResponseTResponse -> {
-            mDialogHelper.dismissProgressDialog();
-            if (uploadCsvResponseTResponse.isSuccess()) {
-                showToast("上传成功");
-            } else {
-                showToast(uploadCsvResponseTResponse.message);
-            }
-        }, throwable -> {
-            mDialogHelper.dismissProgressDialog();
-            showToast(RxHelper.getInstance().getErrorInfo(throwable));
-        });
     }
 
     @Override

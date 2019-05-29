@@ -24,6 +24,7 @@ import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.DeviceAdapter;
 import com.nexless.sfbaglock.bean.ProductInfo;
 import com.nexless.sfbaglock.bean.ProjectInfo;
+import com.nexless.sfbaglock.http.RxHelper;
 import com.nexless.sfbaglock.view.AppTitleBar;
 
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +41,7 @@ import java.util.List;
 public class DevicesActivity extends BaseActivity implements View.OnClickListener, AdapterView
         .OnItemClickListener {
 
+    private static final String TAG = DevicesActivity.class.getSimpleName();
     private ProjectInfo mProject;
     private List<ProductInfo> mDeviceList;
     private ProductInfo mSelectDevice;
@@ -62,7 +64,7 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
         mProject = getIntent().getParcelableExtra(AppConstant.EXTRA_PROJECT);
 
         AppTitleBar titleBar = findViewById(R.id.titlebar);
-        titleBar.setRightListener(this);
+        titleBar.setRightListener("日志", this);
 
         mTvProject = findViewById(R.id.tv_devices_project);
         mListView = findViewById(R.id.lv_devices_list);
@@ -72,6 +74,7 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
         mTvVolt = findViewById(R.id.tv_devices_volt);
         findViewById(R.id.btn_devices_delete).setOnClickListener(this);
         findViewById(R.id.btn_devices_test).setOnClickListener(this);
+        findViewById(R.id.btn_devices_save).setOnClickListener(this);
         mTvProject.setText("Project:" + mProject.getProjectName());
         mDeviceList = LitePal
                 .where("projectNo = ?", mProject.getProjectNo())
@@ -98,7 +101,7 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.apptitlebar_btn_right:
+            case R.id.apptitlebar_ll_right:
                 if (mSelectDevice == null) {
                     showToast("请选择设备！");
                     return;
@@ -135,6 +138,9 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
                     e.printStackTrace();
                     mDialogHelper.dismissProgressDialog();
                 }
+                break;
+            case R.id.btn_devices_save:
+                save(TAG);
                 break;
         }
     }
@@ -222,5 +228,11 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
 
                     }
                 }, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RxHelper.getInstance().unSubscribeTask(TAG);
     }
 }

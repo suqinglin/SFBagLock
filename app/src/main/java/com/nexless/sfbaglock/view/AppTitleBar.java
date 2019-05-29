@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,6 +38,8 @@ public class AppTitleBar extends RelativeLayout
 	private ImageView mBtnLeft;
 //	private TextView mTvRight;
 	private ImageView mIBtnRight;
+	private TextView mTvRight;
+	private LinearLayout mLlRight;
 //	private View mVDivider;
 	public AppTitleBar(Context context)
 	{
@@ -63,6 +66,8 @@ public class AppTitleBar extends RelativeLayout
 		mBtnLeft = lay.findViewById(R.id.apptitlebar_btn_left);
 //		mTvRight = lay.findViewById(R.id.apptitlebar_btn_right);
 		mIBtnRight = lay.findViewById(R.id.apptitlebar_btn_right);
+		mTvRight = lay.findViewById(R.id.apptitlebar_tv_right);
+		mLlRight = lay.findViewById(R.id.apptitlebar_ll_right);
 //		mVDivider = lay.findViewById(R.id.apptitlebar_view_divider);
 		mBtnLeft.setOnClickListener(listener);
 //		mRlLeft.setOnClickListener(listener);
@@ -151,6 +156,17 @@ public class AppTitleBar extends RelativeLayout
 	{
 		mIBtnRight.setVisibility(VISIBLE);
 		mIBtnRight.setOnClickListener(listener);
+	}
+
+	/**
+	 * 为右边按钮设置监听
+	 * @param listener
+	 */
+	public void setRightListener(String rightText, OnClickListener listener)
+	{
+		mLlRight.setVisibility(VISIBLE);
+		mTvRight.setText(rightText);
+		mLlRight.setOnClickListener(listener);
 	}
 
 	/**
