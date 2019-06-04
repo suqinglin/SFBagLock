@@ -96,7 +96,7 @@ public class BluetoothTestActivity extends BaseActivity implements View.OnClickL
             mEdtQrResult.setText(result);
             String[] resultArr = result.split("#");
             try {
-                sendData(resultArr[0], CommUtil.splitMac(resultArr[0].substring(4)), resultArr[1]);
+                sendData(resultArr[0], CommUtil.splitMac(resultArr[0]), resultArr[1]);
             } catch (DecoderException e) {
                 e.printStackTrace();
             }

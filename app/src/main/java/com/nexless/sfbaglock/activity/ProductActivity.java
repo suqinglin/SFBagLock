@@ -1,7 +1,6 @@
 package com.nexless.sfbaglock.activity;
 
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,9 +17,7 @@ import com.calm.comm.lib.qr.zxing.activity.CaptureActivity;
 import com.nexless.ccommble.codec.DecoderException;
 import com.nexless.ccommble.codec.binary.Hex;
 import com.nexless.ccommble.conn.BluetoothListener;
-import com.nexless.ccommble.conn.ConnectionConstants;
 import com.nexless.ccommble.conn.ConnectionHelper;
-import com.nexless.ccommble.data.BagLockAESUtils;
 import com.nexless.ccommble.data.BaglockUtils;
 import com.nexless.ccommble.data.Encrypt;
 import com.nexless.ccommble.data.model.LockResult;
@@ -29,7 +26,6 @@ import com.nexless.ccommble.util.CommHandler;
 import com.nexless.ccommble.util.CommLog;
 import com.nexless.ccommble.util.CommUtil;
 import com.nexless.sfbaglock.AppConstant;
-import com.nexless.sfbaglock.BuildConfig;
 import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.PAdapter;
 import com.nexless.sfbaglock.adapter.PViewHolder;
@@ -37,31 +33,14 @@ import com.nexless.sfbaglock.bean.DeviceBean;
 import com.nexless.sfbaglock.bean.LogInfo;
 import com.nexless.sfbaglock.bean.ProductInfo;
 import com.nexless.sfbaglock.bean.ProjectInfo;
-import com.nexless.sfbaglock.bean.SetupRecordBean;
-import com.nexless.sfbaglock.bean.TResponse;
-import com.nexless.sfbaglock.bean.UploadCsvResponse;
 import com.nexless.sfbaglock.http.RxHelper;
-import com.nexless.sfbaglock.http.ServiceFactory;
-import com.nexless.sfbaglock.util.CsvHelper;
 import com.nexless.sfbaglock.util.DateUtil;
 import com.nexless.sfbaglock.view.AppTitleBar;
-
 import org.jetbrains.annotations.Nullable;
 import org.litepal.LitePal;
-
-import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 /**
  * @date: 2019/5/6
@@ -134,7 +113,10 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_product_save:
-                save(TAG);
+                if (!checkData()) {
+                    return;
+                }
+                save(TAG, mMac);
                 break;
             case R.id.btn_product_load:
                 if (mProject.getProjectNo() == null) {
@@ -462,6 +444,21 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
         message.what = MSG_UPDATE_LOG;
         message.obj = logInfo;
         mHandle.sendMessage(message);
+    }
+
+    @Override
+    public void uploadSucc() {
+        super.uploadSucc();
+
+        mSn = null;
+        mCnt = 0;
+        mMac = null;
+        mDevName = null;
+        mLogContent = null;
+        mTvMsg.setText("");
+        mEdtCnt.setText("");
+        mEdtSn.setText("");
+        mEdtMac.setText("");
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.nexless.sfbaglock.http;
 
 import com.nexless.ccommble.util.CommConstant;
 import com.nexless.sfbaglock.AppConstant;
+import com.nexless.sfbaglock.BuildConfig;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -40,7 +41,7 @@ public class ServiceFactory {
             builder.addInterceptor(loggingInterceptor);
         }
         mRetrofit = new Retrofit.Builder()
-                .baseUrl(AppConstant.BASE_URL)
+                .baseUrl(BuildConfig.SERVER_URL)
                 .client(builder.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

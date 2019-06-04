@@ -70,8 +70,8 @@ public class BaseActivity extends Activity {
         return allGranted;
     }
 
-    public void save(String TAG) {
-        List<ProductInfo> productList = LitePal.findAll(ProductInfo.class);
+    public void save(String TAG, String mac) {
+        List<ProductInfo> productList = LitePal.where("mac = ?", mac).find(ProductInfo.class);
         if (productList == null || productList.isEmpty()) {
             showToast("暂无可上传设备，请先扫码设置");
             return;
@@ -122,14 +122,25 @@ public class BaseActivity extends Activity {
         RxHelper.getInstance().sendRequest(TAG, observable, uploadCsvResponseTResponse -> {
             mDialogHelper.dismissProgressDialog();
             if (uploadCsvResponseTResponse.isSuccess()) {
-                showToast("上传成功");
+//                showToast("上传成功");
+                uploadSucc();
             } else {
-                showToast(uploadCsvResponseTResponse.message);
+//                showToast(uploadCsvResponseTResponse.message);
+                uploadFail(uploadCsvResponseTResponse.message);
             }
         }, throwable -> {
             mDialogHelper.dismissProgressDialog();
-            showToast(RxHelper.getInstance().getErrorInfo(throwable));
+//            showToast(RxHelper.getInstance().getErrorInfo(throwable));
+            uploadFail(RxHelper.getInstance().getErrorInfo(throwable));
         });
+    }
+
+    public void uploadSucc() {
+        showToast("上传成功");
+    }
+
+    public void uploadFail(String msg) {
+        showToast(msg);
     }
 
 }

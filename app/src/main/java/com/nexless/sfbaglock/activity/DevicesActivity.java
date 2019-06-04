@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import com.nexless.ccommble.util.BleStatusUtil;
 import com.nexless.ccommble.util.CommLog;
 import com.nexless.ccommble.util.CommUtil;
 import com.nexless.sfbaglock.AppConstant;
+import com.nexless.sfbaglock.BuildConfig;
 import com.nexless.sfbaglock.R;
 import com.nexless.sfbaglock.adapter.DeviceAdapter;
 import com.nexless.sfbaglock.bean.ProductInfo;
@@ -73,8 +75,10 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
         mTvCnt = findViewById(R.id.tv_devices_cnt);
         mTvVolt = findViewById(R.id.tv_devices_volt);
         findViewById(R.id.btn_devices_delete).setOnClickListener(this);
-        findViewById(R.id.btn_devices_test).setOnClickListener(this);
-        findViewById(R.id.btn_devices_save).setOnClickListener(this);
+        Button btnTest = findViewById(R.id.btn_devices_test);
+        btnTest.setOnClickListener(this);
+        Button btnSave = findViewById(R.id.btn_devices_save);
+        btnSave.setOnClickListener(this);
         mTvProject.setText("Project:" + mProject.getProjectName());
         mDeviceList = LitePal
                 .where("projectNo = ?", mProject.getProjectNo())
@@ -83,6 +87,8 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
         mDfBattery = new DecimalFormat("#.0");
+        btnTest.setVisibility(BuildConfig.DEVICE_TEST_SHOW ? View.VISIBLE : View.GONE);
+        btnSave.setVisibility(BuildConfig.DEVICE_TEST_SHOW ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -122,6 +128,7 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
                         .setNegativeButton("取消", null)
                         .setPositiveButton("确定", (dialog, which) -> {
                             LitePal.deleteAll(ProductInfo.class, "mac = ?", mSelectDevice.getMac());
+                            showToast("删除成功");
                             reset();
                         })
                         .show();
@@ -140,9 +147,19 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_devices_save:
-                save(TAG);
+                if (mSelectDevice == null) {
+                    showToast("请选择设备！");
+                    return;
+                }
+                save(TAG, mSelectDevice.getMac());
                 break;
         }
+    }
+
+    @Override
+    public void uploadSucc() {
+        super.uploadSucc();
+        reset();
     }
 
     /**
@@ -155,6 +172,7 @@ public class DevicesActivity extends BaseActivity implements View.OnClickListene
         mDeviceList.addAll(LitePal
                 .where("projectNo = ?", mProject.getProjectNo())
                 .find(ProductInfo.class));
+        mAdapter.setSelectItem(-1);
         mAdapter.notifyDataSetChanged();
         mTvSn.setText("SN:");
         mTvMac.setText("MAC:");
