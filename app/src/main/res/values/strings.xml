@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR Lock Setup Utility</string>
+    <!--<string name="app_name">QR Lock Setup Utility</string>-->
 
     <!-- 异常 -->
     <string name="timeout_exception">请求超时，请重试</string>

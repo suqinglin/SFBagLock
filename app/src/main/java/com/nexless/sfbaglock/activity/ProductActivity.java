@@ -326,6 +326,11 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                                     CommLog.logE("-----------------------------> SN = " + mSn + "/" + product.getSN());
                                     mEdtCnt.setText(String.valueOf(mCnt));
                                     addOptionLog("开锁成功，SN:" + mEdtSn.getText() + "，电压:" + mDfBattery.format(lockResult.getBattery() / 1000f) + "V");
+                                    // 保存数据到服务器
+                                    if (!checkData()) {
+                                        return;
+                                    }
+                                    save(TAG, mMac);
                                 } else {
                                     addOptionLog(BleStatusUtil.getResultMsg(lockResult.getResult()));
                                 }
@@ -381,6 +386,11 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
                 mSn = result.split("SN:")[1];
                 if (Long.valueOf(mSn) >= mProject.getSnStart() && Long.valueOf(mSn) <= mProject.getSnEnd()) {
                     mEdtSn.setText(String.valueOf(mSn));
+                    mCnt = 0;
+                    mMac = null;
+                    mDevName = null;
+                    mEdtCnt.setText("");
+                    mEdtMac.setText("");
                     startActivityForResult(new Intent(this, SearchDeviceActivity.class), REQ_SEARCH_DEVICE);
                 } else {
                     showToast("SN未在指定范围内");
@@ -450,15 +460,15 @@ public class ProductActivity extends BaseActivity implements View.OnClickListene
     public void uploadSucc() {
         super.uploadSucc();
 
-        mSn = null;
-        mCnt = 0;
-        mMac = null;
-        mDevName = null;
-        mLogContent = null;
-        mTvMsg.setText("");
-        mEdtCnt.setText("");
-        mEdtSn.setText("");
-        mEdtMac.setText("");
+//        mSn = null;
+//        mCnt = 0;
+//        mMac = null;
+//        mDevName = null;
+//        mLogContent = null;
+//        mTvMsg.setText("");
+//        mEdtCnt.setText("");
+//        mEdtSn.setText("");
+//        mEdtMac.setText("");
     }
 
     @Override
